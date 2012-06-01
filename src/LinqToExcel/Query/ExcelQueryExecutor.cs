@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Remotion.Data.Linq;
-using System.IO;
-using System.Data.OleDb;
 using System.Data;
+using System.Data.OleDb;
+using System.IO;
+using System.Linq;
 using System.Reflection;
-using Remotion.Data.Linq.Clauses.ResultOperators;
-using System.Collections;
-using LinqToExcel.Extensions;
-using log4net;
-using System.Text.RegularExpressions;
 using System.Text;
+using System.Text.RegularExpressions;
 using LinqToExcel.Domain;
+using LinqToExcel.Extensions;
+using NLog;
+using Remotion.Data.Linq;
+using Remotion.Data.Linq.Clauses.ResultOperators;
 
 namespace LinqToExcel.Query
 {
     internal class ExcelQueryExecutor : IQueryExecutor
     {
-        private readonly ILog _log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly Logger _log = LogManager.GetCurrentClassLogger();
         private readonly ExcelQueryArgs _args;
         private readonly string _connectionString;
 
@@ -28,14 +27,14 @@ namespace LinqToExcel.Query
             _args = args;
             _connectionString = ExcelUtilities.GetConnectionString(args);
             if (_log.IsDebugEnabled)
-                _log.DebugFormat("Connection String: {0}", _connectionString);
+                _log.Debug("Connection String: {0}", _connectionString);
             GetWorksheetName();
         }
 
         private void ValidateArgs(ExcelQueryArgs args)
         {
             if (_log.IsDebugEnabled)
-                _log.DebugFormat("ExcelQueryArgs = {0}", args);
+                _log.Debug("ExcelQueryArgs = {0}", args);
 
             if (args.FileName == null)
                 throw new ArgumentNullException("FileName", "FileName property cannot be null.");
@@ -205,7 +204,7 @@ namespace LinqToExcel.Query
             {
                 if (!columns.Contains(kvp.Value))
                 {
-                    _log.WarnFormat("'{0}' column that is mapped to the '{1}' property does not exist in the '{2}' worksheet",
+                    _log.Warn("'{0}' column that is mapped to the '{1}' property does not exist in the '{2}' worksheet",
                         kvp.Value, kvp.Key, _args.WorksheetName);
                 }
             }
